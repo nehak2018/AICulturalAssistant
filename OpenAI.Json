@@ -1,0 +1,161 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Qloo",
+    "description": "Qloo API",
+    "version": "2.1.266",
+    "termsOfService": "https://docs.qloo.com",
+    "contact": {
+      "name": "Qloo Inc.",
+      "url": "http://qloo.com",
+      "email": "info@qloo.com"
+    },
+    "x-deployment-date": "2025-07-18T18:01:47+0000",
+    "x-documentation": "https://docs.qloo.com"
+   
+  },
+  "servers": [
+    {
+      "url": "https://hackathon.api.qloo.com"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "ApiKey"
+      }
+    },
+    "schemas": {
+      "Entity": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Qloo entity ID"
+          },
+          "name": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          }
+        }
+      },
+      "SearchResponse": {
+        "type": "object",
+        "properties": {
+          "entities": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Entity"
+            }
+          }
+        }
+      },
+      "RecsRequest": {
+        "type": "object",
+        "properties": {
+          "sample": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "List of entity IDs to seed recommendations"
+          },
+          "category": {
+            "type": "string"
+          }
+        },
+        "required": ["sample"]
+      },
+      "RecsResponse": {
+        "type": "object",
+        "properties": {
+          "recommendations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Entity"
+            }
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "ApiKeyAuth": []
+    }
+  ],
+  "paths": {
+    "/search": {
+      "get": {
+        "operationId": "searchEntities",
+        "summary": "Search entities",
+        "description": "Search Qloo’s knowledge graph for entities matching a query string.",
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful search response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/recs": {
+      "post": {
+        "operationId": "getRecommendations",
+        "summary": "Get recommendations",
+        "description": "Get personalized recommendations based on seed entity IDs.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RecsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful recommendations response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecsResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    }
+  }
+}
